@@ -2,10 +2,10 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class LTPLE_Reseller_Settings {
+class LTPLE_Seller_Settings {
 
 	/**
-	 * The single instance of LTPLE_Reseller_Settings.
+	 * The single instance of LTPLE_Seller_Settings.
 	 * @var 	object
 	 * @access  private
 	 * @since 	1.0.0
@@ -41,7 +41,7 @@ class LTPLE_Reseller_Settings {
 		$this->parent = $parent;
 		
 		$this->plugin 		 	= new stdClass();
-		$this->plugin->slug  	= 'live-template-editor-reseller';
+		$this->plugin->slug  	= 'live-template-editor-seller';
 		
 		// add plugin to addons
 		
@@ -62,12 +62,12 @@ class LTPLE_Reseller_Settings {
 	
 	public function plugin_info(){
 		
-		$this->parent->settings->addons['live-template-editor-reseller'] = array(
+		$this->parent->settings->addons['live-template-editor-seller'] = array(
 			
-			'title' 		=> 'Live Template Editor Reseller',
-			'addon_link' 	=> 'https://github.com/rafasashi/live-template-editor-reseller',
-			'addon_name' 	=> 'live-template-editor-reseller',
-			'source_url' 	=> 'https://github.com/rafasashi/live-template-editor-reseller/archive/master.zip',
+			'title' 		=> 'Live Template Editor Seller',
+			'addon_link' 	=> 'https://github.com/rafasashi/live-template-editor-seller',
+			'addon_name' 	=> 'live-template-editor-seller',
+			'source_url' 	=> 'https://github.com/rafasashi/live-template-editor-seller/archive/master.zip',
 			'description'	=> 'This Live Template Editor addon plugin allows a user to resell products',
 			'author' 		=> 'Rafasashi',
 			'author_link' 	=> 'https://profiles.wordpress.org/rafasashi/',
@@ -86,11 +86,11 @@ class LTPLE_Reseller_Settings {
 		
 		$settings['urls']['fields'][] = array(
 		
-			'id' 			=> 'resellerSlug',
-			'label'			=> __( 'Reseller' , $this->plugin->slug ),
-			'description'	=> '[ltple-client-reseller]',
+			'id' 			=> 'sellerSlug',
+			'label'			=> __( 'Seller' , $this->plugin->slug ),
+			'description'	=> '[ltple-client-seller]',
 			'type'			=> 'slug',
-			'placeholder'	=> __( 'reseller', $this->plugin->slug )
+			'placeholder'	=> __( 'seller', $this->plugin->slug )
 		);
 		
 		// add new setting tab

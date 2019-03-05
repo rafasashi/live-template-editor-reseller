@@ -2,10 +2,10 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class LTPLE_Reseller {
+class LTPLE_Seller {
 
 	/**
-	 * The single instance of LTPLE_Reseller.
+	 * The single instance of LTPLE_Seller.
 	 * @var 	object
 	 * @access  private
 	 * @since 	1.0.0
@@ -59,11 +59,11 @@ class LTPLE_Reseller {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ), 10, 1 );
 		
-		$this->settings = new LTPLE_Reseller_Settings( $this->parent );
+		$this->settings = new LTPLE_Seller_Settings( $this->parent );
 		
-		$this->admin = new LTPLE_Reseller_Admin_API( $this );
+		$this->admin = new LTPLE_Seller_Admin_API( $this );
 		
-		$this->templates = new LTPLE_Reseller_Templates( $this->parent );
+		$this->templates = new LTPLE_Seller_Templates( $this->parent );
 	
 		if ( !is_admin() ) {
 
@@ -111,7 +111,7 @@ class LTPLE_Reseller {
 		
 		// add panel shortocode
 		
-		add_shortcode('ltple-client-reseller', array( $this , 'get_panel_shortcode' ) );
+		add_shortcode('ltple-client-seller', array( $this , 'get_panel_shortcode' ) );
 			
 		// add notification settings
 		
@@ -161,7 +161,7 @@ class LTPLE_Reseller {
 		
 		if( is_admin() ) {
 			
-			add_filter('reseller_custom_fields', array( $this, 'get_reseller_fields' ));
+			add_filter('seller_custom_fields', array( $this, 'get_seller_fields' ));
 		}
 		else{
 			
@@ -173,10 +173,10 @@ class LTPLE_Reseller {
 					
 					foreach( $this->parent->layer->types as $term ){
 					
-						register_rest_route( 'ltple-reseller/v1', '/' . $term->slug . '/', array(
+						register_rest_route( 'ltple-seller/v1', '/' . $term->slug . '/', array(
 							
 							'methods' 	=> 'GET',
-							'callback' 	=> array($this,'get_reseller_rows'),
+							'callback' 	=> array($this,'get_seller_rows'),
 						));
 					}
 				});			
@@ -204,7 +204,7 @@ class LTPLE_Reseller {
 	}
 	
 	
-	public function get_reseller_fields(){
+	public function get_seller_fields(){
 		
 		$fields=[];
 
@@ -212,9 +212,9 @@ class LTPLE_Reseller {
 		return $fields;
 	}
 	
-	public function get_reseller_items($layer_type) {
+	public function get_seller_items($layer_type) {
 	
-		$reseller_items = array();
+		$seller_items = array();
 				
 		// set query arguments
 		
@@ -270,16 +270,16 @@ class LTPLE_Reseller {
 					$item->price = 0;
 				}
 				
-				$reseller_items[] = $item;
+				$seller_items[] = $item;
 			}
 		}
 
-		return $reseller_items;
+		return $seller_items;
 	}	
 	
-	public function get_reseller_rows($request) {
+	public function get_seller_rows($request) {
 		
-		$reseller_rows = [];
+		$seller_rows = [];
 		
 		$layer_type = explode( '?', $this->parent->urls->current );
 		$layer_type = basename($layer_type[0]);
@@ -290,9 +290,9 @@ class LTPLE_Reseller {
 			
 			if( $term->slug == $layer_type) {
 				
-				if( $reseller_items = $this->get_reseller_items($term) ){
+				if( $seller_items = $this->get_seller_items($term) ){
 		
-					foreach( $reseller_items as $item ){
+					foreach( $seller_items as $item ){
 						
 						$edit_url = add_query_arg(array(
 							
@@ -300,7 +300,7 @@ class LTPLE_Reseller {
 							'action' 	=> 'edit',
 							'id' 		=> $item->ID,
 							
-						), $this->parent->urls->reseller );
+						), $this->parent->urls->seller );
 
 						$row = [];
 						$row['preview'] 		= '<div class="thumb_wrapper" style="background:url(' . $this->parent->layer->get_thumbnail_url($item) . ');background-size:cover;background-repeat:no-repeat;background-position:center;width:300px;display:inline-block;"></div>';
@@ -309,7 +309,7 @@ class LTPLE_Reseller {
 						$row['price'] 			= $item->price;
 						$row['action'] 			= '<a href="' . $edit_url . '" class="btn btn-sm btn-warning">Edit</a>';
 						
-						$reseller_rows[] = $row;
+						$seller_rows[] = $row;
 					}
 				}				
 				
@@ -317,7 +317,7 @@ class LTPLE_Reseller {
 			}
 		}
 		
-		return $reseller_rows;
+		return $seller_rows;
 	}
 	
 	public function header(){
@@ -334,7 +334,7 @@ class LTPLE_Reseller {
 		
 		// add user attribute
 			
-		//$this->parent->user->userAttribute = new LTPLE_Reseller_User( $this->parent );	
+		//$this->parent->user->userAttribute = new LTPLE_Seller_User( $this->parent );	
 	}
 	
 	public function handle_first_log_ever(){
@@ -577,25 +577,25 @@ class LTPLE_Reseller {
 	
 	public function get_panel_url(){
 		
-		$slug = get_option( $this->parent->_base . 'resellerSlug' );
+		$slug = get_option( $this->parent->_base . 'sellerSlug' );
 		
 		if( empty( $slug ) ){
 			
 			$post_id = wp_insert_post( array(
 			
-				'post_title' 		=> 'Reseller',
+				'post_title' 		=> 'Seller',
 				'post_type'     	=> 'page',
 				'comment_status' 	=> 'closed',
 				'ping_status' 		=> 'closed',
-				'post_content' 		=> '[ltple-client-reseller]',
+				'post_content' 		=> '[ltple-client-seller]',
 				'post_status' 		=> 'publish',
 				'menu_order' 		=> 0
 			));
 			
-			$slug = update_option( $this->parent->_base . 'resellerSlug', get_post($post_id)->post_name );
+			$slug = update_option( $this->parent->_base . 'sellerSlug', get_post($post_id)->post_name );
 		}
 		
-		$this->parent->urls->reseller = $this->parent->urls->home . '/' . $slug . '/';	
+		$this->parent->urls->seller = $this->parent->urls->home . '/' . $slug . '/';	
 
 		// add rewrite rules
 		
@@ -854,9 +854,9 @@ class LTPLE_Reseller {
 						$sender_email 		= get_bloginfo('admin_email');
 						$recipient_email 	= $sender_email;
 						
-						$Email_title = 'New template submission from reseller ID:' . $this->parent->user->ID;
+						$Email_title = 'New template submission from seller ID:' . $this->parent->user->ID;
 						
-						$message = 'A new template submited by the reseller ID ' . $this->parent->user->ID . ' is waiting for your approval.' . PHP_EOL;
+						$message = 'A new template submited by the seller ID ' . $this->parent->user->ID . ' is waiting for your approval.' . PHP_EOL;
 						
 						$headers   = [];
 						$headers[] = 'From: ' . get_bloginfo('name') . ' <'.$sender_email.'>';
@@ -869,7 +869,7 @@ class LTPLE_Reseller {
 							
 							global $phpmailer;
 							
-							wp_mail($this->parent->settings->options->emailSupport, 'Error sending reseller submission' , print_r($phpmailer->ErrorInfo,true));			
+							wp_mail($this->parent->settings->options->emailSupport, 'Error sending seller submission' , print_r($phpmailer->ErrorInfo,true));			
 						}					
 					}
 				}
@@ -1012,7 +1012,7 @@ class LTPLE_Reseller {
 
 		$this->parent->stars->triggers['plan subscription']['ltple_paid_market_place_item'] = array(
 			
-			'description' => 'when you purchase an item on the reseller'
+			'description' => 'when you purchase an item on the seller'
 		);	
 
 		return true;
@@ -1173,14 +1173,14 @@ class LTPLE_Reseller {
 	} // End load_plugin_textdomain ()
 
 	/**
-	 * Main LTPLE_Reseller Instance
+	 * Main LTPLE_Seller Instance
 	 *
-	 * Ensures only one instance of LTPLE_Reseller is loaded or can be loaded.
+	 * Ensures only one instance of LTPLE_Seller is loaded or can be loaded.
 	 *
 	 * @since 1.0.0
 	 * @static
-	 * @see LTPLE_Reseller()
-	 * @return Main LTPLE_Reseller instance
+	 * @see LTPLE_Seller()
+	 * @return Main LTPLE_Seller instance
 	 */
 	public static function instance ( $file = '', $version = '1.0.0' ) {
 		if ( is_null( self::$_instance ) ) {

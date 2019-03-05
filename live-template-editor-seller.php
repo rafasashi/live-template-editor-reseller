@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name: Live Template Editor Reseller
+ * Plugin Name: Live Template Editor Seller
  * Version: 1.0
  * Plugin URI: https://github.com/rafasashi
  * Description: This Live Template Editor addon plugin allows a user to resell products
@@ -25,20 +25,20 @@
 	if ( ! defined( 'ABSPATH' ) ) exit;
 	
 	/**
-	 * Returns the main instance of LTPLE_Reseller to prevent the need to use globals.
+	 * Returns the main instance of LTPLE_Seller to prevent the need to use globals.
 	 *
 	 * @since  1.0.0
-	 * @return object LTPLE_Reseller
+	 * @return object LTPLE_Seller
 	 */
-	function LTPLE_Reseller ( $version = '1.0.0' ) {
+	function LTPLE_Seller ( $version = '1.0.0' ) {
 		
 		$instance = LTPLE_Client::instance( __FILE__, $version );
 		
-		if ( empty( $instance->reseller ) ) {
+		if ( empty( $instance->seller ) ) {
 			
-			$instance->reseller = new stdClass();
+			$instance->seller = new stdClass();
 			
-			$instance->reseller = LTPLE_Reseller::instance( __FILE__, $instance, $version );
+			$instance->seller = LTPLE_Seller::instance( __FILE__, $instance, $version );
 		}
 
 		return $instance;
@@ -64,5 +64,5 @@
 			require_once( $file );
 		}
 	
-		LTPLE_Reseller('1.1.0');	
+		LTPLE_Seller('1.1.0');	
 	});

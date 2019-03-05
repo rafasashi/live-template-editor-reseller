@@ -1,4 +1,4 @@
-=== Live Template Editor Reseller ===
+=== Live Template Editor Seller ===
 Contributors: rafasashi
 Tags: editor, style, profiler
 Requires at least: 4.6
@@ -9,11 +9,11 @@ LTPLE template editor
 
 == Description ==
 
-Live Template Editor Reseller allows you to edit template profils.
+Live Template Editor Seller allows you to edit template profils.
 
 == Installation ==
 
-Installing "Live Template Editor Reseller" can be done either by searching for "Live Template Editor Reseller" via the "Plugins > Add New" screen in your WordPress dashboard, or by using the following steps:
+Installing "Live Template Editor Seller" can be done either by searching for "Live Template Editor Seller" via the "Plugins > Add New" screen in your WordPress dashboard, or by using the following steps:
 
 1. Download the plugin via WordPress.org
 2. Upload the ZIP file through the 'Plugins > Add New > Upload' screen in your WordPress dashboard

@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class LTPLE_Reseller_Templates {
+class LTPLE_Seller_Templates {
 
 	var $parent;
 	
@@ -20,9 +20,21 @@ class LTPLE_Reseller_Templates {
 		
 		add_filter( 'ltple_gallery_item_title', array( $this, 'filter_gallery_item_title' ),10,2);		
 		
-		// add layer fields
+		// default layer fields
 		
 		add_filter( 'ltple_default_layer_fields', array( $this, 'add_default_layer_fields'),10);
+	
+		// layer type fields
+	
+		//add_action('layer-type_add_form_fields', array( $this, 'add_layer_fields' ) );
+		add_action('layer-type_edit_form_fields', array( $this, 'add_edit_layer_fields' ) );
+	
+		//add_filter('manage_edit-layer-type_columns', array( $this, 'set_layer_type_columns' ) );
+		//add_filter('manage_layer-type_custom_column', array( $this, 'add_layer_column_content' ),10,3);		
+		
+		//add_action('create_layer-type', array( $this, 'save_layer_taxonomy_fields' ) );
+		add_action('edit_layer-type', array( $this, 'save_layer_taxonomy_fields' ) );	
+			
 	}
 	
 	public function add_profile_tabs(){
@@ -87,8 +99,8 @@ class LTPLE_Reseller_Templates {
 				
 					array(
 				
-						'name' 		=> 'reseller-settings',
-						'title' 	=> __( 'Reseller settings', 'live-template-editor-client' ), 
+						'name' 		=> 'seller-settings',
+						'title' 	=> __( 'Seller settings', 'live-template-editor-client' ), 
 						'screen'	=> array('cb-default-layer'),
 						'context' 	=> 'side',
 					),	
@@ -100,6 +112,48 @@ class LTPLE_Reseller_Templates {
 					'placeholder'	=> '0',
 					'description'	=> ''
 			);
+		}
+	}
+	
+	public function add_edit_layer_fields($term){
+		
+		//output our additional fields
+
+		echo'<tr class="form-field">';
+		
+			echo'<th valign="top" scope="row">';
+				
+				echo'<label for="category-text">Selling </label>';
+			
+			echo'</th>';
+			
+			echo'<td>';
+				
+				$this->parent->admin->display_field( array(			
+					
+					'name'			=> 'can_sell',
+					'id'			=> 'can_sell',
+					'label'			=> "",
+					'type'			=> 'switch',
+					'default'		=> '',
+					'description'	=> 'Open to sellers',
+					
+				), $term );
+				
+			echo'</td>';	
+			
+		echo'</tr>';		
+
+	}
+	
+	public function save_layer_taxonomy_fields($term_id){
+
+		if( $this->parent->user->is_admin ){
+			
+			if(isset($_POST['can_sell'])){
+
+				update_term_meta( $term_id, 'can_sell', $_POST['can_sell']);			
+			}			
 		}
 	}
 	
@@ -615,7 +669,7 @@ class LTPLE_Reseller_Templates {
 	}
 	
 	/**
-	 * Main LTPLE_Reseller_Templates Instance
+	 * Main LTPLE_Seller_Templates Instance
 	 *
 	 * Ensures only one instance of LTPLE_Client_Stars is loaded or can be loaded.
 	 *

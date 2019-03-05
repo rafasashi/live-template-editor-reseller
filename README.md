@@ -1,1 +1,1 @@
-# live-template-editor-reseller
+# live-template-editor-seller

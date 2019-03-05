@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class LTPLE_Reseller_User {
+class LTPLE_Seller_User {
 
 	var $parent;
 	var $list;

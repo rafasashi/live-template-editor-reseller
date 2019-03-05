@@ -19,9 +19,9 @@
 		
 			echo'<ul class="nav nav-tabs tabs-left">';
 				
-				echo'<li class="gallery_type_title">Reseller</li>';
+				echo'<li class="gallery_type_title">Seller</li>';
 				
-				echo'<li'.( $currentTab == 'dashboard' ? ' class="active"' : '' ).'><a href="'.$this->parent->urls->reseller . '">Dashboard</a></li>';
+				echo'<li'.( $currentTab == 'dashboard' ? ' class="active"' : '' ).'><a href="'.$this->parent->urls->seller . '">Dashboard</a></li>';
 				
 				if ( !empty($ltple->layer->types) ){
 					
@@ -29,7 +29,7 @@
 
 					foreach( $ltple->layer->types as $term ){
 			
-						echo'<li'.( $currentTab == $term->slug ? ' class="active"' : '' ).'><a href="'.$this->parent->urls->reseller . '?tab=' . $term->slug . '">' . ucfirst($term->name) . '</a></li>';
+						echo'<li'.( $currentTab == $term->slug ? ' class="active"' : '' ).'><a href="'.$this->parent->urls->seller . '?tab=' . $term->slug . '">' . ucfirst($term->name) . '</a></li>';
 					}
 				}	
 
@@ -57,7 +57,7 @@
 									
 									echo '<h2>Add Product</h2>';
 												
-									$ltple->reseller->get_product_form($currentTab);
+									$ltple->seller->get_product_form($currentTab);
 								}
 								elseif( !empty($_GET['id']) && is_numeric($_GET['id']) ){
 							
@@ -71,7 +71,7 @@
 												
 												echo '<h2>Edit Product</h2>';
 												
-												$ltple->reseller->get_product_form($currentTab,$post);
+												$ltple->seller->get_product_form($currentTab,$post);
 											}
 											elseif( $_GET['action'] == 'delete' ){
 												
@@ -187,7 +187,7 @@
 
 									$ltple->api->get_table(
 									
-										$ltple->urls->api . 'ltple-reseller/v1/' . $term->slug . '?' . http_build_query($_POST, '', '&amp;'), 
+										$ltple->urls->api . 'ltple-seller/v1/' . $term->slug . '?' . http_build_query($_POST, '', '&amp;'), 
 										$fields, 
 										$trash		= false,
 										$export		= false,

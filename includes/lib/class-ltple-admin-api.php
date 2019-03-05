@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class LTPLE_Reseller_Admin_API {
+class LTPLE_Seller_Admin_API {
 	
 	var $parent;
 	
@@ -347,8 +347,8 @@ class LTPLE_Reseller_Admin_API {
 					$image_thumb = wp_get_attachment_thumb_url( $data );
 				}
 				$html .= '<img id="' . $option_name . '_preview" class="image_preview" src="' . $image_thumb . '" /><br/>' . "\n";
-				$html .= '<input id="' . $option_name . '_button" type="button" data-uploader_title="' . __( 'Upload an image' , 'live-template-editor-reseller' ) . '" data-uploader_button_text="' . __( 'Use image' , 'live-template-editor-reseller' ) . '" class="image_upload_button button" value="'. __( 'Upload new image' , 'live-template-editor-reseller' ) . '" />' . "\n";
-				$html .= '<input id="' . $option_name . '_delete" type="button" class="image_delete_button button" value="'. __( 'Remove image' , 'live-template-editor-reseller' ) . '" />' . "\n";
+				$html .= '<input id="' . $option_name . '_button" type="button" data-uploader_title="' . __( 'Upload an image' , 'live-template-editor-seller' ) . '" data-uploader_button_text="' . __( 'Use image' , 'live-template-editor-seller' ) . '" class="image_upload_button button" value="'. __( 'Upload new image' , 'live-template-editor-seller' ) . '" />' . "\n";
+				$html .= '<input id="' . $option_name . '_delete" type="button" class="image_delete_button button" value="'. __( 'Remove image' , 'live-template-editor-seller' ) . '" />' . "\n";
 				$html .= '<input id="' . $option_name . '" class="image_data_field" type="hidden" name="' . $option_name . '" value="' . $data . '"/><br/>' . "\n";
 			break;
 
