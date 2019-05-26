@@ -6,6 +6,8 @@ class LTPLE_Seller_Templates {
 
 	var $parent;
 	
+	var $types;
+	
 	/**
 	 * Constructor function
 	 */
@@ -35,6 +37,31 @@ class LTPLE_Seller_Templates {
 		//add_action('create_layer-type', array( $this, 'save_layer_taxonomy_fields' ) );
 		add_action('edit_layer-type', array( $this, 'save_layer_taxonomy_fields' ) );	
 			
+	}
+	
+	public function get_types(){
+		
+		if( is_null($this->types) ){
+			
+			$this->types = get_terms( array(
+				
+				'taxonomy'  	=> 'layer-type',
+				'hide_empty' 	=> false,
+				'meta_query' 	=> array(
+				
+					array(
+					
+					   'key'       => 'can_sell',
+					   'value'     => 'on',
+					   'compare'   => '='
+					)
+				),
+				
+								
+			));			
+		}
+		
+		return $this->types;
 	}
 	
 	public function add_profile_tabs(){
@@ -92,26 +119,36 @@ class LTPLE_Seller_Templates {
 		}
 		
 		if( !empty($post) ){
-		
-			$this->parent->layer->defaultFields[] = array(
-			 
-				"metabox" =>
+			
+			$layer_type = $this->parent->layer->get_layer_type($post);
+			
+			if( !empty($layer_type->term_id) ){
+			
+				$can_sell = get_term_meta( $layer_type->term_id, 'can_sell', true);
 				
-					array(
+				if( $can_sell == 'on' ){
 				
-						'name' 		=> 'seller-settings',
-						'title' 	=> __( 'Seller settings', 'live-template-editor-client' ), 
-						'screen'	=> array('cb-default-layer'),
-						'context' 	=> 'side',
-					),	
-					
-					'id'			=> "layerPrice",
-					'label'			=> "Price",
-					'type'			=> 'number',
-					'default'		=> '0',
-					'placeholder'	=> '0',
-					'description'	=> ''
-			);
+					$this->parent->layer->defaultFields[] = array(
+					 
+						"metabox" =>
+						
+							array(
+						
+								'name' 		=> 'seller-settings',
+								'title' 	=> __( 'Seller settings', 'live-template-editor-client' ), 
+								'screen'	=> array('cb-default-layer'),
+								'context' 	=> 'side',
+							),	
+							
+							'id'			=> "layerPrice",
+							'label'			=> "Price",
+							'type'			=> 'number',
+							'default'		=> '0',
+							'placeholder'	=> '0',
+							'description'	=> ''
+					);
+				}
+			}
 		}
 	}
 	
@@ -123,7 +160,7 @@ class LTPLE_Seller_Templates {
 		
 			echo'<th valign="top" scope="row">';
 				
-				echo'<label for="category-text">Selling </label>';
+				echo'<label for="category-text">Seller Program</label>';
 			
 			echo'</th>';
 			
@@ -146,6 +183,72 @@ class LTPLE_Seller_Templates {
 
 	}
 	
+	public function get_panel_items($layer_type) {
+	
+		$seller_items = array();
+				
+		// set query arguments
+		
+		$args = array(
+			
+			'post_type'			=> 'cb-default-layer',
+			'post_status'		=> array('publish','draft','pending'),
+			'author'			=> $this->parent->user->ID,
+			'posts_per_page' 	=> -1,
+		);			
+		
+		/*
+		$mq = 0;
+		
+		// filter price
+		
+		$args['meta_query'][$mq][] = array(
+
+			'key' 		=> 'layerPrice',
+			'value' 	=> 0,
+			'compare' 	=> '>',
+			'type' 		=> 'NUMERIC'			
+		);
+		*/
+		
+		// filter layer type
+		
+		$args['tax_query'] = array('relation'=>'AND');
+		
+		$args['tax_query'][] = array(
+		
+			'taxonomy' 			=> 'layer-type',
+			'field' 			=> 'slug',
+			'terms' 			=> $layer_type->slug,
+			'include_children' 	=> false,
+			'operator'			=> 'IN'
+		);
+
+		$q = new WP_Query( $args );		
+		
+		if( !empty($q->posts) ){
+			
+			foreach( $q->posts as $item ){
+				
+				$item->layer_type 	= $layer_type->slug;
+				
+				$item->price = 0;
+				
+				if( $item_meta = get_post_meta($item->ID) ){
+					
+					if( !empty($item_meta['layerPrice']) ){
+					
+						$item->price = intval($item_meta['layerPrice'][0]);
+					}
+				}
+				
+				$seller_items[] = $item;
+			}
+		}
+
+		return $seller_items;
+	}
+	
 	public function save_layer_taxonomy_fields($term_id){
 
 		if( $this->parent->user->is_admin ){
@@ -155,44 +258,6 @@ class LTPLE_Seller_Templates {
 				update_term_meta( $term_id, 'can_sell', $_POST['can_sell']);			
 			}			
 		}
-	}
-	
-	public function get_market_tab_content(){
-		
-		$tab_content = '';
-		
-		// get product items
-		
-		if( $items = $this->get_market_items() ){
-
-			foreach( $items as $item ){
-				
-				$tab_content .= $item;
-			}
-			
-			$tab_content .='<div class="pagination" style="display: inline-block;width: 100%;padding: 0px 15px;">';
-				
-				$tab_content .= paginate_links( array(
-					'base'         => '%_%',
-					'total'        => $this->max_num_pages,
-					'current'      => max( 1, get_query_var( 'paged' ) ),
-					'format'       => '?paged=%#%',
-					'show_all'     => false,
-					'type'         => 'plain',
-					'end_size'     => 2,
-					'mid_size'     => 1,
-					'prev_next'    => true,
-					'prev_text'    => sprintf( '<i></i> %1$s', __( 'Prev', 'live-template-editor-client' ) ),
-					'next_text'    => sprintf( '%1$s <i></i>', __( 'Next', 'live-template-editor-client' ) ),
-					'add_args'     => false,
-					'add_fragment' => '',
-				) );
-				
-			$tab_content .='</div>	';
-		}
-
-	
-		return $tab_content;
 	}
 	
 	public function get_profile_tab_content($author_id){
@@ -375,73 +440,6 @@ class LTPLE_Seller_Templates {
 		return $this->categories[$author_id];
 	}
 	
-	public function get_market_items(){
-		
-		$items =[];
-
-		$paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
-		
-		// meta query
-		
-		$meta_query = array('relation'=>'AND');
-		
-		$meta_query[] = array(
-					
-			array(
-			
-				'key' 		=> 'layerPrice',
-				'value' 	=> 0,
-				'compare' 	=> '>'
-			),
-		);		
-		
-		// taxonomy query
-		
-		/*
-		$tax_query = array('relation'=>'AND');
-		
-		$tax_query[] = array(
-		
-			'taxonomy' 			=> 'layer-type',
-			'field' 			=> 'slug',
-			'terms' 			=> $layer_type,
-			'include_children' 	=> false,
-			'operator'			=> 'IN'
-		);
-		*/		
-		
-		if( $query = new WP_Query(array( 
-		
-			'post_type' 	=> 'cb-default-layer',
-			'posts_per_page'=> 15,
-			'paged' 		=> $paged,
-			//'tax_query' 	=> $tax_query,
-			'meta_query' 	=> $meta_query,
-			
-		))){
-			
-			$this->max_num_pages = $query->max_num_pages;
-			
-			$this->totalItems = $query->found_posts;
-			
-			while ( $query->have_posts() ) : $query->the_post(); 
-				
-				global $post;			
-				
-				//get item
-				
-				$item = $this->get_item($post);
-				
-				//merge item
-				
-				$items[]=$item;					
-				
-			endwhile; wp_reset_query();
-		}
-
-		return $items;		
-	}
-	
 	public function get_profile_items($layer_type,$author=0){
 		
 		$items =[];
@@ -537,21 +535,7 @@ class LTPLE_Seller_Templates {
 				
 				$item.='<div class="panel panel-default">';
 					
-					if ( $image_id = get_post_thumbnail_id( $post->ID ) ){
-						
-						if ($src = wp_get_attachment_image_src( $image_id, 'medium' )){
-							
-							$item.='<div class="thumb_wrapper" style="background:url(' . $src[0] . ');background-size:cover;background-repeat:no-repeat;"></div>'; //thumb_wrapper
-						}
-						else{
-							
-							$item.='<div class="thumb_wrapper" style="background:#ffffff;"></div>';
-						}
-					}
-					else{
-						
-						$item.='<div class="thumb_wrapper" style="background:#ffffff;"></div>';
-					}					
+					$item.='<div class="thumb_wrapper" style="background:url(' . $this->parent->layer->get_thumbnail_url($post) . ');background-size:cover;background-repeat:no-repeat;background-position:top center;"></div>';					
 
 					$item.='<div class="panel-body">';
 

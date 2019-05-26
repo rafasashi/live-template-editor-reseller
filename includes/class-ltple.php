@@ -26,7 +26,6 @@ class LTPLE_Seller {
 	var $totalItems = 0;
 	var $agreements = array();
 	var $max_num_pages;
-	var $categories = array();
 	 
 	public function __construct ( $file='', $parent, $version = '1.0.0' ) {
 
@@ -119,7 +118,7 @@ class LTPLE_Seller {
 		
 		// add link to theme menu
 		
-		add_filter( 'ltple_view_my_profile', array( $this, 'add_theme_menu_link'));	
+		add_filter( 'ltple_view_my_profile', array( $this, 'add_theme_menu_link'),10.1);	
 				
 		// add button to navbar
 				
@@ -143,7 +142,7 @@ class LTPLE_Seller {
 		add_filter( 'ltple_api_layer_plan_option', array( $this, 'add_api_layer_plan_option'),10,1);	
 		add_filter( 'ltple_api_layer_plan_option_total', array( $this, 'add_api_layer_plan_option_total'),10,2);
 		
-		add_filter( 'ltple_plan_shortcode_attributes', array( $this, 'add_plan_shortcode_attributes'),10,2);
+		add_filter( 'ltple_plan_shortcode_attributes', array( $this, 'add_plan_shortcode_attributes'),10,1);
 		add_filter( 'ltple_plan_subscribed', array( $this, 'handle_subscription_plan'),10);
 		
 		add_filter( 'ltple_plan_delivered', array( $this, 'handle_item_delivery'),10,2);
@@ -153,8 +152,13 @@ class LTPLE_Seller {
 		
 		//add_filter( 'ltple_gallery_before_output', array( $this, 'set_gallery'),10,2);
 		
-		$this->add_star_triggers();
+		add_action( 'ltple_list_programs', function(){
+			
+			$this->parent->programs->list['seller'] = 'Seller';
+		});		
 		
+		$this->add_star_triggers();
+
 	} // End __construct ()
 	
 	public function init(){	 
@@ -165,28 +169,35 @@ class LTPLE_Seller {
 		}
 		else{
 			
-			if( !empty($this->parent->layer->types) ){
+			if( !empty($this->templates->get_types()) ){
 				
 				//Add Custom API Endpoints
 				
 				add_action( 'rest_api_init', function(){
 					
-					foreach( $this->parent->layer->types as $term ){
+					foreach( $this->templates->types as $type ){
 					
-						register_rest_route( 'ltple-seller/v1', '/' . $term->slug . '/', array(
+						register_rest_route( 'ltple-seller/v1', '/' . $type->slug . '/', array(
 							
 							'methods' 	=> 'GET',
-							'callback' 	=> array($this,'get_seller_rows'),
+							'callback' 	=> array($this,'get_panel_rows'),
 						));
 					}
 				});			
 			}
 			
-			if( !empty($_POST) ){
+			if( !empty($_POST) && strpos($this->parent->urls->current,$this->parent->urls->seller) !== false ){
 				
 				$this->save_product_frontend();
 			}
 		}
+	}
+	
+	public function get_seller_balance( $user_id ){
+		
+		$balance = '0.00';
+
+		return '$' . $balance;
 	}
 	
 	public function set_privacy_fields(){
@@ -210,74 +221,9 @@ class LTPLE_Seller {
 
 
 		return $fields;
-	}
-	
-	public function get_seller_items($layer_type) {
-	
-		$seller_items = array();
-				
-		// set query arguments
-		
-		$args = array(
-			
-			'post_type'			=> 'cb-default-layer',
-			'post_status'		=> array('publish','draft','pending'),
-			'author'			=> $this->parent->user->ID,
-			'posts_per_page' 	=> -1,
-		);			
-		
-		/*
-		$mq = 0;
-		
-		// filter price
-		
-		$args['meta_query'][$mq][] = array(
-
-			'key' 		=> 'layerPrice',
-			'value' 	=> 0,
-			'compare' 	=> '>',
-			'type' 		=> 'NUMERIC'			
-		);
-		*/
-		
-		// filter layer type
-		
-		$args['tax_query'] = array('relation'=>'AND');
-		
-		$args['tax_query'][] = array(
-		
-			'taxonomy' 			=> 'layer-type',
-			'field' 			=> 'slug',
-			'terms' 			=> $layer_type->slug,
-			'include_children' 	=> false,
-			'operator'			=> 'IN'
-		);
-
-		$q = new WP_Query( $args );		
-		
-		if( !empty($q->posts) ){
-			
-			foreach( $q->posts as $item ){
-				
-				$item->layer_type 	= $layer_type->slug;
-				
-				if( $item_meta = get_post_meta($item->ID) ){
-					
-					$item->price = intval($item_meta['layerPrice'][0]);
-				}
-				else{
-					
-					$item->price = 0;
-				}
-				
-				$seller_items[] = $item;
-			}
-		}
-
-		return $seller_items;
 	}	
 	
-	public function get_seller_rows($request) {
+	public function get_panel_rows($request) {
 		
 		$seller_rows = [];
 		
@@ -286,34 +232,37 @@ class LTPLE_Seller {
 		
 		$term = null;
 	
-		foreach( $this->parent->layer->types as $term ){
-			
-			if( $term->slug == $layer_type) {
-				
-				if( $seller_items = $this->get_seller_items($term) ){
+		if( $types = $this->templates->get_types() ){
 		
-					foreach( $seller_items as $item ){
-						
-						$edit_url = add_query_arg(array(
-							
-							'tab' 		=> $item->layer_type,
-							'action' 	=> 'edit',
-							'id' 		=> $item->ID,
-							
-						), $this->parent->urls->seller );
-
-						$row = [];
-						$row['preview'] 		= '<div class="thumb_wrapper" style="background:url(' . $this->parent->layer->get_thumbnail_url($item) . ');background-size:cover;background-repeat:no-repeat;background-position:center;width:300px;display:inline-block;"></div>';
-						$row['name'] 			= ucfirst($item->post_title);
-						$row['status'] 			= $this->get_product_status($item);
-						$row['price'] 			= $item->price;
-						$row['action'] 			= '<a href="' . $edit_url . '" class="btn btn-sm btn-warning">Edit</a>';
-						
-						$seller_rows[] = $row;
-					}
-				}				
+			foreach( $types as $type ){
 				
-				break;
+				if( $type->slug == $layer_type) {
+					
+					if( $seller_items = $this->templates->get_panel_items($type) ){
+			
+						foreach( $seller_items as $item ){
+							
+							$edit_url = add_query_arg(array(
+								
+								'tab' 		=> $item->layer_type,
+								'action' 	=> 'edit',
+								'id' 		=> $item->ID,
+								
+							), $this->parent->urls->seller );
+
+							$row = [];
+							$row['preview'] 		= '<div class="thumb_wrapper" style="background:url(' . $this->parent->layer->get_thumbnail_url($item) . ');background-size:cover;background-repeat:no-repeat;background-position:top center;width:300px;display:inline-block;"></div>';
+							$row['name'] 			= ucfirst($item->post_title);
+							$row['status'] 			= $this->get_product_status($item);
+							$row['price'] 			= $item->price;
+							$row['action'] 			= '<a href="' . $edit_url . '" class="btn btn-sm btn-warning">Edit</a>';
+							
+							$seller_rows[] = $row;
+						}
+					}				
+					
+					break;
+				}
 			}
 		}
 		
@@ -332,9 +281,9 @@ class LTPLE_Seller {
 	
 	public function add_user_attribute(){
 		
-		// add user attribute
+		// is user seller
 			
-		//$this->parent->user->userAttribute = new LTPLE_Seller_User( $this->parent );	
+		$this->parent->user->is_seller = $this->parent->programs->has_program('seller', $this->parent->user->ID, $this->parent->user->programs);
 	}
 	
 	public function handle_first_log_ever(){
@@ -349,35 +298,26 @@ class LTPLE_Seller {
 	
 	public function get_panel_shortcode(){
 		
-		if($this->parent->user->loggedin){
+		if( !empty($_REQUEST['output']) && $_REQUEST['output'] == 'widget' ){
 			
-			if( !empty($_REQUEST['output']) && $_REQUEST['output'] == 'widget' ){
-				
+			if($this->parent->user->loggedin){
+			
 				include($this->views . '/widget.php');
-			}
-			else{
-			
-				include($this->parent->views . '/navbar.php');
-			
-				include($this->views . '/panel.php');
 			}
 		}
 		else{
+		
+			include($this->parent->views . '/navbar.php');
 			
-			echo'<div style="font-size:20px;padding:20px;margin:0;" class="alert alert-warning">';
+			if($this->parent->user->loggedin){
+			
+				include($this->views . '/panel.php');
+			}
+			else{
 				
-				echo'You need to log in first...';
-				
-				echo'<div class="pull-right">';
-
-					echo'<a style="margin:0 2px;" class="btn-lg btn-success" href="'. wp_login_url( $this->parent->request->proto . $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] ) .'">Login</a>';
-					
-					echo'<a style="margin:0 2px;" class="btn-lg btn-info" href="'. wp_login_url( $this->parent->urls->editor ) .'&action=register">Register</a>';
-				
-				echo'</div>';
-				
-			echo'</div>';
-		}				
+				echo $this->parent->login->get_form();
+			}
+		}		
 	}
 	
 	public function get_product_form( $layer_type = '', $post = null ){
@@ -388,7 +328,7 @@ class LTPLE_Seller {
 																					
 			//$supports = get_all_post_type_supports( 'cb-default-layer' );
 											
-			echo '<form method="post">';
+			echo '<form method="post" enctype="multipart/form-data">';
 				
 				echo'<div class="row">';
 					
@@ -416,8 +356,6 @@ class LTPLE_Seller {
 						
 					echo'</div>';
 					
-				
-
 					// publish panel
 					
 					if( !empty($post) ){
@@ -476,7 +414,83 @@ class LTPLE_Seller {
 				echo'<div class="row">';
 					
 					echo'<div class="col-md-3 col-md-push-9">';
+						
+						if( !empty($post) ){
+							
+							// image preview
+							
+							$media_url = add_query_arg( array(
+							
+								'output' => 'widget',
+								
+							), $this->parent->urls->media . 'user-images/' );
+							
+							$md5 = md5($media_url);
+							
+							$modal_id 	= 'modal_' . $md5;
+							$preview_id = 'preview_' . $md5;
+							$input_id 	= 'input_' . $md5;
+							
+							echo'<div class="panel panel-default">';
+							
+								echo '<div id="'.$preview_id.'" class="thumb_wrapper" style="background-image:url(' . $this->parent->layer->get_thumbnail_url($post) . ');background-size:cover;background-repeat:no-repeat;background-position:top center;width:100%;display:block;"></div>';
+								
+								echo '<input type="hidden" id="'.$input_id.'" name="image_url" value="" />';
+								
+								echo'<div class="panel-footer">';
+								
+									echo'<div class="row" style="padding: 0 10px;">';
+										
+										echo '<button type="button" class="pull-right btn btn-xs btn-info" data-toggle="modal" data-target="#'.$modal_id.'">Edit</button>';
+									
+										echo '<div class="modal fade" id="'.$modal_id.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">'.PHP_EOL;
+											
+											echo '<div class="modal-dialog modal-lg" role="document">'.PHP_EOL;
+												
+												echo '<div class="modal-content">'.PHP_EOL;
+													
+													echo '<div class="modal-header">'.PHP_EOL;
+														
+														echo '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'.PHP_EOL;
+														
+														echo '<h4 class="modal-title text-left" id="myModalLabel">Media Library</h4>'.PHP_EOL;
+													
+													echo '</div>'.PHP_EOL;
 
+													echo '<div class="loadingIframe" style="position:absolute;height:50px;width:100%;background-position:50% center;background-repeat: no-repeat;background-image:url(\'' . $this->parent->server->url . '/c/p/live-template-editor-server/assets/loader.gif\');"></div>';
+
+													echo '<iframe id="iframe_'.$modal_id.'" data-src="' . $media_url . '" data-input-id="#' . $input_id . '" style="display:block;position:relative;width:100%;top:0;bottom: 0;border:0;height:500px;"></iframe>';						
+													
+													echo '<script>';
+	
+														echo ';(function($){';
+
+															echo '$(document).ready(function(){
+																
+																$("#'.$input_id.'").on("change", function(e){
+																	
+																	$("#'.$preview_id.'").css("background-image","url(" + $(this).val() + ")");
+																});
+															
+															});';
+														
+														echo '})(jQuery);';
+														
+													echo '</script>';
+													
+												echo '</div>'.PHP_EOL;
+												
+											echo '</div>'.PHP_EOL;
+											
+										echo '</div>'.PHP_EOL;									
+									
+									echo'</div>';
+									
+								echo'</div>';
+							
+							echo'</div>';
+						}
+						
 						// metaboxes
 			
 						foreach ( $fields as $field ) {
@@ -583,7 +597,8 @@ class LTPLE_Seller {
 			
 			$post_id = wp_insert_post( array(
 			
-				'post_title' 		=> 'Seller',
+				'post_title' 		=> 'Freelancer Program',
+				'post_name' 		=> 'selling',
 				'post_type'     	=> 'page',
 				'comment_status' 	=> 'closed',
 				'ping_status' 		=> 'closed',
@@ -644,13 +659,11 @@ class LTPLE_Seller {
 
 		// add theme menu link
 		
-		/*
-		echo'<li style="position:relative;">';
+		echo'<li style="position:relative;background:#182f42;">';
 			
-			echo '<a href="'. $this->parent->urls->addon . '"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Addon Panel</a>';
+			echo '<a href="'. $this->parent->urls->seller .'"><span class="glyphicon glyphicon-usd" aria-hidden="true"></span> Freelancer Program</a>';
 
 		echo'</li>';
-		*/
 	}
 	
 	public function add_left_navbar_button(){
@@ -769,7 +782,8 @@ class LTPLE_Seller {
 	}
 	
 	public function save_layer_fields($term){
-		
+
+	
 		/*
 		if( isset($_POST[$term->taxonomy .'-addon-amount']) && is_numeric($_POST[$term->taxonomy .'-addon-amount']) ){
 
@@ -791,6 +805,13 @@ class LTPLE_Seller {
 			if( $post = get_post($post_id) ){
 				
 				if( $this->parent->user->is_admin || intval($post->post_author) == $this->parent->user->ID ){
+					
+					if( !empty($_POST['image_url']) ){
+						
+						//upload image
+						
+						$this->parent->image->upload_post_image($_POST['image_url'],$post_id,'seller');
+					}
 					
 					//update main arguments
 					
@@ -885,12 +906,24 @@ class LTPLE_Seller {
 			
 			// add product
 			
+			$post_title = $_POST['post_title'];
+			
+			$tax_input = $_POST['tax_input'];
+			
+			if( !empty($tax_input['layer-type']) ){
+						
+				if( $addon_range = $this->parent->gallery->get_type_addon_range($tax_input['layer-type']) ){
+
+					$tax_input['layer-range'][] = $addon_range->term_id;
+				}				
+			}
+			
 			if( $product_id = wp_insert_post( array(
 				
 				'post_status' 	=> 'draft',
 				'post_type' 	=> 'cb-default-layer',
-				'post_title' 	=> $_POST['post_title'],
-				'tax_input'		=> $_POST['tax_input']
+				'post_title' 	=> $post_title,
+				'tax_input'		=> $tax_input
 			))){
 				
 				$redirect_url = add_query_arg( array( 
@@ -998,7 +1031,7 @@ class LTPLE_Seller {
 		*/
 	}
 	
-	public function add_plan_shortcode_attributes($taxonomies,$plan_options){
+	public function add_plan_shortcode_attributes($plan){
 		
 		//$this->parent->plan->shortcode .= 'addon attributes';		
 	}
