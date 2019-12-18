@@ -244,45 +244,6 @@
 								}
 								else{
 									
-									echo'<style>
-										
-										table {
-										
-											font-size:15px;
-										}
-										
-										th {
-											
-											vertical-align: middle !important;
-										}
-										
-										th input, th select {
-											
-											width: 95% !important;
-											padding: 5px !important;
-											font-size: 11px !important;
-											margin: 0 auto 6px auto !important;
-											height: 25px !important;
-											background: #ffffff !important;
-											color: #888 !important;
-											border: none !important;
-										}
-									
-										.fixed-table-toolbar {
-											
-											margin-top: -48px;
-											margin-bottom: -6px;
-											display: inline-block;
-											float: right;
-										}
-										
-										.fixed-table-container {
-											
-											border:none !important;
-										}
-										
-									</style>';
-									
 									echo'<ul class="nav nav-pills" role="tablist">';
 										
 										echo'<li role="presentation" class="active"><a href="' . $ltple->urls->current . '" role="tab">' . strtoupper(str_replace('-',' ',$type->slug)) . '</a></li>';

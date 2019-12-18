@@ -255,7 +255,7 @@ class LTPLE_Seller {
 							$row['name'] 			= ucfirst($item->post_title);
 							$row['status'] 			= $this->get_product_status($item);
 							$row['price'] 			= $item->price;
-							$row['action'] 			= '<a href="' . $edit_url . '" class="btn btn-sm btn-warning">Edit</a>';
+							$row['action'] 			= '<a href="' . $edit_url . '" class="btn btn-sm btn-success">Edit</a>';
 							
 							$seller_rows[] = $row;
 						}
@@ -396,7 +396,7 @@ class LTPLE_Seller {
 						
 						echo'<div class="col-md-9">';
 							
-							echo'<div class="panel" style="box-shadow:none;">';
+							echo'<div class="panel" style="box-shadow:none;background:transparent;">';
 							
 								echo'<div class="panel-body">';
 							
@@ -912,7 +912,7 @@ class LTPLE_Seller {
 			
 			if( !empty($tax_input['layer-type']) ){
 						
-				if( $addon_range = $this->parent->gallery->get_type_addon_range($tax_input['layer-type']) ){
+				if( $addon_range = $this->parent->layer->get_type_addon_range($tax_input['layer-type']) ){
 
 					$tax_input['layer-range'][] = $addon_range->term_id;
 				}				
@@ -923,8 +923,18 @@ class LTPLE_Seller {
 				'post_status' 	=> 'draft',
 				'post_type' 	=> 'cb-default-layer',
 				'post_title' 	=> $post_title,
-				'tax_input'		=> $tax_input
+				//'tax_input'	=> $tax_input //does not work if a user does not have the capability to edit
 			))){
+				
+				if( !empty($tax_input) ){
+					
+					foreach($tax_input as $taxonomy => $terms ){
+						
+						$append = false;
+						
+						wp_set_object_terms($product_id,$terms,$taxonomy,$append);
+					}
+				}
 				
 				$redirect_url = add_query_arg( array( 
 				
@@ -1045,7 +1055,7 @@ class LTPLE_Seller {
 
 		$this->parent->stars->triggers['plan subscription']['ltple_paid_market_place_item'] = array(
 			
-			'description' => 'when you purchase an item on the seller'
+			'description' => 'when you purchase a template from a seller'
 		);	
 
 		return true;
@@ -1069,23 +1079,6 @@ class LTPLE_Seller {
 		
 
 	}
-	
-	/*
-	public function set_gallery($layer_type,$layer_range){
-		
-		if( !$this->parent->inWidget ){
-		
-			$this->items = $this->get_gallery_items($layer_type,$layer_range);
-			
-			if( $this->totalItems > 0 ){
-			
-				add_filter( 'ltple_gallery_tab', array( $this, 'add_gallery_tab'),10,2);
-
-				add_filter( 'ltple_gallery_items', array( $this, 'add_gallery_items'),10,2);
-			}
-		}
-	}
-	*/
 	
 	public function add_gallery_tab($layer_type,$layer_range){
 		

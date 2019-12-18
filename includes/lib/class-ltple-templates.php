@@ -18,7 +18,7 @@ class LTPLE_Seller_Templates {
 		
 		// add profile tabs		
 
-		add_filter( 'ltple_profile_tabs', array( $this, 'add_profile_tabs'));
+		add_filter( 'ltple_profile_tabs', array( $this, 'add_profile_tabs'),10,1);
 		
 		add_filter( 'ltple_gallery_item_title', array( $this, 'filter_gallery_item_title' ),10,2);		
 		
@@ -64,37 +64,39 @@ class LTPLE_Seller_Templates {
 		return $this->types;
 	}
 	
-	public function add_profile_tabs(){
+	public function add_profile_tabs($tabs){
 		
 		if( $tab_content = $this->get_profile_tab_content($this->parent->profile->id) ){
 		
-			$this->parent->profile->tabs['addon']['position'] 	= 3;
-			$this->parent->profile->tabs['addon']['name'] 		= 'Templates';
-			$this->parent->profile->tabs['addon']['content'] 	= $tab_content;
+			$tabs['addon']['position'] 	= 3;
+			$tabs['addon']['name'] 		= 'Templates';
+			
+			if( $this->parent->profile->tab == 'templates' ){
+				
+				add_action( 'wp_enqueue_scripts',function(){
+
+					wp_register_style( $this->parent->_token . '-templates', false, array());
+					wp_enqueue_style( $this->parent->_token . '-templates' );
+				
+					wp_add_inline_style( $this->parent->_token . '-templates', '
+
+						#templates {
+							
+							margin-top:20px;
+						}
+						
+					');
+
+				},10 );				
+				
+				$tabs['addon']['content'] 	= $tab_content;
+			}
 		}
+		
+		return $tabs;
 	}		
 	
-	public function filter_gallery_item_title($content,$post){
-		
-		$nickname = get_the_author_meta( 'nickname', $post->post_author );
-			
-		$item_title='<a href="' . $this->parent->urls->profile . $post->post_author . '/templates/" style="position: absolute;top: 140px;">';
-			
-			$item_title.='<img src="'.$this->parent->image->get_avatar_url($post->post_author).'" style="height:50px;width:50px;border: 5px solid #fff;background:#fff;border-radius:250px;">';
-			
-		$item_title.='</a>';
-		
-		$item_title.='<div style="margin-top:10px;">';
-		
-			$item_title.= $content;
-		
-		$item_title.='</div>';
-		
-		$item_title.='<div style="font-size: 11px;">';
-
-			$item_title.='by <a href="' . $this->parent->urls->profile . $post->post_author . '/templates/">' . $nickname . '</a>';
-		
-		$item_title.='</div>';
+	public function filter_gallery_item_title($item_title,$post){
 		
 		return $item_title;
 	}
@@ -278,7 +280,7 @@ class LTPLE_Seller_Templates {
 				
 					foreach( $categories as $term ){
 						
-						$type_url = $this->parent->urls->current;
+						$type_url = $this->parent->profile->url . '/templates/';
 						
 						$type_url = remove_query_arg(array('paged','cat'),$type_url);
 						
