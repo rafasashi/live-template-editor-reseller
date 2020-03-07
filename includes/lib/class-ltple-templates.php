@@ -523,7 +523,7 @@ class LTPLE_Seller_Templates {
 
 			//get editor_url
 
-			$editor_url = $this->parent->urls->editor . '?uri='.$post->ID;
+			$editor_url = $this->parent->urls->edit . '?uri='.$post->ID;
 									
 			//get post_title
 			
