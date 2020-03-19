@@ -519,7 +519,7 @@ class LTPLE_Seller_Templates {
 			
 			$currency = '$';
 			
-			$permalink = get_permalink($post) . '?preview';
+			$permalink = $this->parent->urls->home . '/preview/' . $post->post_name . '/';
 
 			//get editor_url
 
@@ -584,9 +584,9 @@ class LTPLE_Seller_Templates {
 							
 							$item.='</button>'.PHP_EOL;
 
-							$item.='<div class="modal fade" id="'.$modal_id.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">'.PHP_EOL;
+							$item.='<div class="modal fade" id="'.$modal_id.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index:9999999;">'.PHP_EOL;
 								
-								$item.='<div class="modal-dialog modal-lg" role="document">'.PHP_EOL;
+								$item.='<div class="modal-dialog modal-full" role="document">'.PHP_EOL;
 									
 									$item.='<div class="modal-content">'.PHP_EOL;
 									
