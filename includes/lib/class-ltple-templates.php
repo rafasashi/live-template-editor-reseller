@@ -101,55 +101,33 @@ class LTPLE_Seller_Templates {
 		return $item_title;
 	}
 	
-	public function add_default_layer_fields($post=null){
+	public function add_default_layer_fields($layer_type=null){
+	
+		if( !empty($layer_type->term_id) ){
 		
-		if( empty($post) ){
+			$can_sell = get_term_meta( $layer_type->term_id, 'can_sell', true);
 			
-			if( is_admin() ){
-				
-				$post_id = get_the_ID();
-			}
-			elseif( !empty($_GET['id']) ){
-		
-				$post_id = intval($_GET['id']);
-			}
+			if( $can_sell == 'on' ){
 			
-			if( !empty($post_id) ){
-				
-				$post = get_post($post_id);
-			}
-		}
-		
-		if( !empty($post) ){
-			
-			$layer_type = $this->parent->layer->get_layer_type($post);
-			
-			if( !empty($layer_type->term_id) ){
-			
-				$can_sell = get_term_meta( $layer_type->term_id, 'can_sell', true);
-				
-				if( $can_sell == 'on' ){
-				
-					$this->parent->layer->defaultFields[] = array(
-					 
-						"metabox" =>
+				$this->parent->layer->defaultFields[] = array(
+				 
+					"metabox" =>
+					
+						array(
+					
+							'name' 		=> 'seller-settings',
+							'title' 	=> __( 'Seller settings', 'live-template-editor-client' ), 
+							'screen'	=> array('cb-default-layer'),
+							'context' 	=> 'side',
+						),	
 						
-							array(
-						
-								'name' 		=> 'seller-settings',
-								'title' 	=> __( 'Seller settings', 'live-template-editor-client' ), 
-								'screen'	=> array('cb-default-layer'),
-								'context' 	=> 'side',
-							),	
-							
-							'id'			=> "layerPrice",
-							'label'			=> "Price",
-							'type'			=> 'number',
-							'default'		=> '0',
-							'placeholder'	=> '0',
-							'description'	=> ''
-					);
-				}
+						'id'			=> "layerPrice",
+						'label'			=> "Price",
+						'type'			=> 'number',
+						'default'		=> '0',
+						'placeholder'	=> '0',
+						'description'	=> ''
+				);
 			}
 		}
 	}

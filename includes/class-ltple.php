@@ -306,7 +306,7 @@ class LTPLE_Seller {
 			}
 		}
 		else{
-		
+			
 			include($this->parent->views . '/navbar.php');
 			
 			if($this->parent->user->loggedin){
@@ -324,10 +324,8 @@ class LTPLE_Seller {
 		
 		if( $layer_type != '' ){
 			
-			$fields = $this->parent->layer->get_default_layer_fields($post);
-																					
-			//$supports = get_all_post_type_supports( 'cb-default-layer' );
-											
+			$fields = $this->parent->layer->get_default_layer_fields(array(),$post);
+					
 			echo '<form method="post" enctype="multipart/form-data">';
 				
 				echo'<div class="row">';
@@ -834,7 +832,7 @@ class LTPLE_Seller {
 						wp_update_post($args);
 					}
 
-					$fields = $this->parent->layer->get_default_layer_fields($post);
+					$fields = $this->parent->layer->get_default_layer_fields(array(),$post);
 					
 					foreach( $fields as $field ){
 					

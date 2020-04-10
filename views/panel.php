@@ -218,7 +218,7 @@
 												
 												if( $_GET['action'] == 'edit' ){
 													
-													echo '<h2>Edit Product</h2>';
+													echo '<h2 style="margin-top: 15px;">Edit Product</h2>';
 													
 													$ltple->seller->get_product_form($currentTab,$post);
 												}
