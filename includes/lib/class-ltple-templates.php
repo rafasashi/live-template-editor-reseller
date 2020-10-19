@@ -497,9 +497,15 @@ class LTPLE_Seller_Templates {
 			
 			$currency = '$';
 			
-			$permalink = $this->parent->urls->home . '/preview/' . $post->post_name . '/';
+			// get info url
+			
+			$info_url = get_permalink($post);
+			
+			// get preview url
+			
+			$preview_url = $this->parent->urls->home . '/preview/' . $post->post_name . '/';
 
-			//get editor_url
+			// get editor_url
 
 			$editor_url = $this->parent->urls->edit . '?uri='.$post->ID;
 									
@@ -550,11 +556,11 @@ class LTPLE_Seller_Templates {
 							
 							// info button
 							
-							$item.='<a class="btn btn-sm btn-info" style="margin-right:4px;" href="'. $this->parent->urls->product . $post->ID . '/" title="More info about '. $post_title .' template">Info</a>';
+							$item.='<a class="btn btn-sm btn-info" style="margin-right:4px;" href="'. $info_url . '/" title="More info about '. $post_title .' template">Info</a>';
 							
 							// preview button
 
-							$modal_id='modal_'.md5($permalink);
+							$modal_id='modal_'.md5($preview_url);
 							
 							$item.='<button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#'.$modal_id.'">'.PHP_EOL;
 								
@@ -582,7 +588,7 @@ class LTPLE_Seller_Templates {
 												
 												$item.= '<div class="loadingIframe" style="position:absolute;height:50px;width:100%;background-position:50% center;background-repeat: no-repeat;background-image:url(\'' . $this->parent->server->url . '/c/p/live-template-editor-server/assets/loader.gif\');"></div>';
 
-												$item.= '<iframe data-src="'.$permalink.'" style="width: 100%;position:relative;bottom: 0;border:0;height: 450px;overflow: hidden;"></iframe>';											
+												$item.= '<iframe data-src="'.$preview_url.'" style="width: 100%;position:relative;bottom: 0;border:0;height: 450px;overflow: hidden;"></iframe>';											
 											}
 											else{
 												
