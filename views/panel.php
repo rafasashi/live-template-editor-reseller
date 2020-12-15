@@ -21,7 +21,7 @@
 			
 				echo'<ul class="nav nav-tabs tabs-left">';
 					
-					echo'<li class="gallery_type_title">Freelancer Program</li>';
+					echo'<li class="gallery_type_title gallery_head">Freelancer Program</li>';
 					
 					echo'<li'.( $currentTab == 'overview' ? ' class="active"' : '' ).'><a href="'.$this->parent->urls->seller . '">Overview</a></li>';
 					
@@ -208,9 +208,9 @@
 													
 										$ltple->seller->get_product_form($currentTab);
 									}
-									elseif( !empty($_GET['id']) && is_numeric($_GET['id']) ){
+									elseif( !empty($_GET['pid']) && is_numeric($_GET['pid']) ){
 								
-										$product_id = intval($_GET['id']);
+										$product_id = intval($_GET['pid']);
 										
 										if( $post = get_post($product_id) ){
 											

@@ -246,7 +246,7 @@ class LTPLE_Seller {
 								
 								'tab' 		=> $item->layer_type,
 								'action' 	=> 'edit',
-								'id' 		=> $item->ID,
+								'pid' 		=> $item->ID,
 								
 							), $this->parent->urls->seller );
 
@@ -325,7 +325,9 @@ class LTPLE_Seller {
 		if( $layer_type != '' ){
 			
 			$fields = $this->parent->layer->get_default_layer_fields(array(),$post);
-					
+			
+			$permalink = get_permalink($post);
+			
 			echo '<form method="post" enctype="multipart/form-data">';
 				
 				echo'<div class="row">';
@@ -347,9 +349,18 @@ class LTPLE_Seller {
 							echo'<div class="panel-body">';
 							
 								echo'<input type="text" placeholder="Title" name="post_title" value="' . ( !empty($post->post_title) ? $post->post_title : '' ) . '" style="width:100%;padding:10px;font-size:20px;border-radius:2px;" required="required"/>';
-						
+								
+								if( $post->post_status == 'publish' ){
+									
+									echo '<hr>';
+									
+									echo '<label style="margin:0 11px 0 7px;">URL</label>';
+								
+									echo '<a href="'.$permalink.'" target="_blank">' . $permalink . '</a>';
+								}								
+								
 							echo'</div>';
-						
+							
 						echo'</div>';
 						
 					echo'</div>';
@@ -937,7 +948,7 @@ class LTPLE_Seller {
 				$redirect_url = add_query_arg( array( 
 				
 					'action' 	=> 'edit', 
-					'id'		=> $product_id,
+					'pid'		=> $product_id,
 					
 				), $this->parent->urls->current );
 			}

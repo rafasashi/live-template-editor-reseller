@@ -93,26 +93,6 @@ class LTPLE_Seller_Settings {
 			'placeholder'	=> __( 'seller', $this->plugin->slug )
 		);
 		
-		// add new setting tab
-		
-		/*
-		$settings['test'] = array(
-			'title'					=> __( 'Test', $this->plugin->slug ),
-			'description'			=> '',
-			'fields'				=> array(
-				
-				array(
-					'id' 			=> 'addon_url',
-					'label'			=> __( 'Addon Url' , $this->plugin->slug ),
-					'description'	=> '',
-					'type'			=> 'text',
-					'default'		=> '',
-					'placeholder'	=> __( 'http://', $this->plugin->slug )
-				),				
-			)
-		);
-		*/
-		
 		if( !empty($settings) ){
 		
 			foreach( $settings as $slug => $data ){
