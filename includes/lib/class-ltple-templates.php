@@ -523,7 +523,7 @@ class LTPLE_Seller_Templates {
 					
 					$item.='<div class="thumb_wrapper" style="background:url(' . $this->parent->layer->get_thumbnail_url($post) . ');background-size:cover;background-repeat:no-repeat;background-position:top center;"></div>';					
 
-					$item.='<div class="panel-body">';
+					$item.='<div class="panel-body" style="position:relative;">';
 
 						$item.='<div class="pull-right">';
 						

@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Live Template Editor Seller
- * Version: 1.0.2.3
+ * Version: 1.0.2.4
  * Plugin URI: https://github.com/rafasashi
  * Description: This Live Template Editor addon plugin allows a user to resell products
  * Author: Rafasashi
