@@ -112,10 +112,6 @@ class LTPLE_Seller {
 		
 		add_shortcode('ltple-client-seller', array( $this , 'get_panel_shortcode' ) );
 			
-		// add notification settings
-		
-		add_filter( 'ltple_notification_settings', array( $this, 'get_notification_settings'));		
-		
 		// add link to theme menu
 		
 		add_filter( 'ltple_view_my_profile', array( $this, 'add_theme_menu_link'),10.1);	
@@ -650,17 +646,6 @@ class LTPLE_Seller {
 			
 			$this->tab = 'addon-tab';
 		}
-		*/
-	}
-	
-	public function get_notification_settings(){
-		
-		/*
-		$this->parent->email->notification_settings['addon-channel'] = array(
-			
-			'default' 		=> 'true',
-			'description' 	=> '',
-		);
 		*/
 	}
 	
