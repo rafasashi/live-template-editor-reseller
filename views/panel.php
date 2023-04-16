@@ -41,58 +41,47 @@
 
 			echo'<div id="content" class="library-content" style="border-left:1px solid #ddd;background:#fbfbfb;padding-bottom:15px;min-height:700px;">';
 				
-				echo'<div class="tab-content col-xs-12">';
+				echo'<div class="tab-content">';
 				
 					if( $currentTab == 'overview' ){
 						
 						echo'<div class="tab-pane active" id="overview">';
-
-							echo'<div class="bs-callout bs-callout-primary">';
 							
-								echo'<h4>';
-								
-									echo'Overview';
-									
-								echo'</h4>';
-							
-								echo'<p>';
-								
-									echo 'Your earnings snapshot and seller information';
-								
-								echo'</p>';	
-
-							echo'</div>';														
-
-							echo'<div class="row">';
 							echo'<div class="col-xs-12">';
-							
-								echo'<div class=" panel panel-default" style="margin-bottom:0;">';
 								
-									echo'<table class="table table-striped table-hover">';
+								echo'<div class="bs-callout bs-callout-primary">';
+								
+									echo'<h4>';
 									
-									echo'<tbody>';
+										echo'Overview';
 										
-										echo'<tr style="font-size:18px;font-weight:bold;">';
-											
-											echo'<td>Pending balance</td>';
-											
-											echo'<td>' . $ltple->seller->get_seller_balance($ltple->user->ID) . '</td>';
+									echo'</h4>';
+								
+									echo'<p>';
+									
+										echo 'Your earnings snapshot and seller information';
+									
+									echo'</p>';	
+
+								echo'</div>';														
+
+								echo'<table class="table table-striped table-hover">';
+								
+								echo'<tbody>';
+									
+									echo'<tr style="font-size:18px;font-weight:bold;">';
 										
-										echo'</tr>';
+										echo'<td>Pending balance</td>';
+										
+										echo'<td>' . $ltple->seller->get_seller_balance($ltple->user->ID) . '</td>';
 									
-									echo'</tbody>';
-									
-									echo'</table>';
+									echo'</tr>';
 								
-								echo'</div>';
+								echo'</tbody>';
 								
-							echo'</div>';
-							echo'</div>';
-							
-							echo'<div class="row">';
-							echo'<div class="col-xs-12">';
-							
-								echo'<div class="well" style="display:inline-block;width:100%;margin-top:20px;">';
+								echo'</table>';
+
+								echo'<div class="well" style="display:inline-block;width:100%;">';
 									
 									echo'<div class="col-xs-12 col-sm-7">';
 									
@@ -189,7 +178,6 @@
 									
 								echo'</div>';
 							
-							echo'</div>';
 							echo'</div>';						
 
 						echo'</div>';
@@ -253,65 +241,61 @@
 									echo'</ul>';
 
 									// get table fields
-									
-									echo'<div class="row">';
+								
+									$fields = array(
 										
-										$fields = array(
-											
-											array(
+										array(
 
-												'field' 	=> 'preview',
-												'sortable' 	=> 'false',
-												'content' 	=> '',
-											),
-											array(
+											'field' 	=> 'preview',
+											'sortable' 	=> 'false',
+											'content' 	=> '',
+										),
+										array(
 
-												'field' 		=> 'name',
-												'sortable' 		=> 'true',
-												'content' 		=> 'Name',
-												'filter-control'=> 'input',
-											),
-											array(
+											'field' 		=> 'name',
+											'sortable' 		=> 'true',
+											'content' 		=> 'Name',
+											'filter-control'=> 'input',
+										),
+										array(
 
-												'field' 		=> 'status',
-												'sortable' 		=> 'true',
-												'content' 		=> 'Status',
-												'filter-control'=> 'select',
-											), 									
-											array(
+											'field' 		=> 'status',
+											'sortable' 		=> 'true',
+											'content' 		=> 'Status',
+											'filter-control'=> 'select',
+										), 									
+										array(
 
-												'field' 		=> 'price',
-												'sortable' 		=> 'true',
-												'content' 		=> 'Price ($)',
-												'filter-control'=> 'select',
-											),								
-											array(
+											'field' 		=> 'price',
+											'sortable' 		=> 'true',
+											'content' 		=> 'Price ($)',
+											'filter-control'=> 'select',
+										),								
+										array(
 
-												'field' 	=> 'action',
-												'sortable' 	=> 'false',
-												'content' 	=> '',
-											)											
-										);
+											'field' 	=> 'action',
+											'sortable' 	=> 'false',
+											'content' 	=> '',
+										)											
+									);
+								
+									// get table of results
+
+									$ltple->api->get_table(
 									
-										// get table of results
-
-										$ltple->api->get_table(
-										
-											$ltple->urls->api . 'ltple-seller/v1/' . $type->slug . '?' . http_build_query($_POST, '', '&amp;'), 
-											$fields, 
-											$trash		= false,
-											$export		= false,
-											$search		= true,
-											$toggle		= false,
-											$columns	= false,
-											$header		= true,
-											$pagination	= true,
-											$form		= false,
-											$toolbar 	= 'toolbar',
-											$card		= false
-										);
-
-									echo'</div>';
+										$ltple->urls->api . 'ltple-seller/v1/' . $type->slug . '?' . http_build_query($_POST, '', '&amp;'), 
+										$fields, 
+										$trash		= false,
+										$export		= false,
+										$search		= true,
+										$toggle		= false,
+										$columns	= false,
+										$header		= true,
+										$pagination	= true,
+										$form		= false,
+										$toolbar 	= 'toolbar',
+										$card		= false
+									);
 								}
 							}
 						}
