@@ -66,6 +66,7 @@ class LTPLE_Seller_Templates {
 	
 	public function add_profile_tabs($tabs){
 		
+		/*
 		if( $tab_content = $this->get_profile_tab_content($this->parent->profile->id) ){
 		
 			$tabs['addon']['position'] 	= 3;
@@ -92,6 +93,7 @@ class LTPLE_Seller_Templates {
 				$tabs['addon']['content'] 	= $tab_content;
 			}
 		}
+		*/
 		
 		return $tabs;
 	}		

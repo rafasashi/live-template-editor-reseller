@@ -25,6 +25,7 @@
 					
 					echo'<li'.( $currentTab == 'overview' ? ' class="active"' : '' ).'><a href="'.$this->parent->urls->seller . '">Overview</a></li>';
 					
+					/*
 					if( $types = $ltple->seller->templates->get_types() ){
 						
 						echo'<li class="gallery_type_title">Manage Templates</li>';
@@ -33,7 +34,8 @@
 				
 							echo'<li'.( $currentTab == $type->slug ? ' class="active"' : '' ).'><a href="'.$this->parent->urls->seller . '?tab=' . $type->slug . '">' . ucfirst($type->name) . '</a></li>';
 						}
-					}	
+					}
+					*/
 
 				echo'</ul>';
 				
@@ -95,7 +97,7 @@
 											
 											echo'<div class="col-xs-6">';
 											
-												echo'<b>50%</b> on product sales';
+												echo'<b>20%</b> on product sales';
 												
 											echo'</div>';
 
@@ -182,6 +184,7 @@
 
 						echo'</div>';
 					}
+					/*
 					elseif( $types = $ltple->seller->templates->get_types() ){
 						
 						foreach( $types as $type ){
@@ -236,7 +239,7 @@
 										
 										echo'<li role="presentation" class="active"><a href="' . $ltple->urls->current . '" role="tab">' . strtoupper(str_replace('-',' ',$type->slug)) . '</a></li>';
 										
-										echo'<li role="presentation"><a href="' . $ltple->urls->current . '&action=add" style="background:#4caf50;color:#fff;">+ New</a></li>';
+										echo'<li role="presentation"><a class="btn btn-sm btn-success" href="' . $ltple->urls->current . '&action=add" style="margin:7px 3px;padding:5px 10px !important;">+ New</a></li>';
 										
 									echo'</ul>';
 
@@ -300,6 +303,7 @@
 							}
 						}
 					}
+					*/
 
 				echo'</div>';
 				
