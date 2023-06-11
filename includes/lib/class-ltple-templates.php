@@ -104,7 +104,8 @@ class LTPLE_Seller_Templates {
 	}
 	
 	public function add_default_layer_fields($layer_type=null){
-	
+		
+		/*
 		if( !empty($layer_type->term_id) ){
 		
 			$can_sell = get_term_meta( $layer_type->term_id, 'can_sell', true);
@@ -132,6 +133,7 @@ class LTPLE_Seller_Templates {
 				);
 			}
 		}
+		*/
 	}
 	
 	public function add_edit_layer_fields($term){
