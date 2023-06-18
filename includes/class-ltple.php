@@ -131,12 +131,7 @@ class LTPLE_Seller {
 		add_filter( 'ltple_layer_range_columns', array( $this, 'add_layer_columns'));
 		add_filter( 'ltple_layer_option_columns', array( $this, 'add_layer_columns'));
 							
-		add_filter( 'ltple_layer_column_content', array( $this, 'add_layer_column_content'),10,2);
-		
 		// handle plan
-		
-		add_filter( 'ltple_api_layer_plan_option', array( $this, 'add_api_layer_plan_option'),10,1);	
-		add_filter( 'ltple_api_layer_plan_option_total', array( $this, 'add_api_layer_plan_option_total'),10,2);
 		
 		add_filter( 'ltple_plan_shortcode_attributes', array( $this, 'add_plan_shortcode_attributes'),10,1);
 		add_filter( 'ltple_plan_subscribed', array( $this, 'handle_subscription_plan'),10);
@@ -951,87 +946,12 @@ class LTPLE_Seller {
 		//$this->parent->layer->columns['addon-column'] = 'Addon columns';
 	}
 	
-	public function add_layer_column_content($column_name, $term){
-		
-		/*
-		if( $column_name === 'addon') {
-
-			$this->parent->layer->column .= 'addon column content';
-		}
-		*/
-	}
-	
-	public function add_api_layer_plan_option ($terms){
-		
-		/*
-		$this->parent->admin->html .= '<td style="width:150px;">';
-		
-			foreach($terms as $term){
-				
-				$this->parent->admin->html .= '<span style="display:block;padding:1px 0 3px 0;margin:0;">';
-					
-					if($term->options['addon_amount']==1){
-						
-						$this->parent->admin->html .= '+'.$term->options['addon_amount'].' dom';
-					}
-					elseif($term->options['addon_amount']>0){
-						
-						$this->parent->admin->html .= '+'.$term->options['addon_amount'].' doms';
-					}	
-					else{
-						
-						$this->parent->admin->html .= $term->options['addon_amount'].' doms';
-					}					
-			
-				$this->parent->admin->html .= '</span>';
-			}
-		
-		$this->parent->admin->html .= '</td>';
-		*/
-	}
-	
 	public function sum_addon_amount( &$total_addon_amount=0, $options){
 		
 		/*
 		$total_addon_amount = $total_addon_amount + $options['addon_amount'];
 		
 		return $total_addon_amount;
-		*/
-	}
-	
-	public function add_api_layer_plan_option_total($taxonomies,$plan_options){
-
-		/*
-	
-		$total_addon_amount = 0;
-	
-		foreach ( $taxonomies as $taxonomy => $terms ) {
-	
-			foreach($terms as $term){
-
-				if ( in_array( $term->slug, $plan_options ) ) {
-					
-					$total_addon_amount 	= $this->sum_addon_amount( $total_addon_amount, $term->options);
-				}
-			}
-		}
-		
-		$this->parent->admin->html .= '<td style="width:150px;">';
-		
-			if($total_addon_amount==1){
-				
-				$this->parent->admin->html .= '+'.$total_addon_amount.' addon';
-			}
-			elseif($total_addon_amount>0){
-				
-				$this->parent->admin->html .= '+'.$total_addon_amount.' addons';
-			}									
-			else{
-				
-				$this->parent->admin->html .= $total_addon_amount.' addons';
-			}		
-		
-		$this->parent->admin->html .= '</td>';
 		*/
 	}
 	

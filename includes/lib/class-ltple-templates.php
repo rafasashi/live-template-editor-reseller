@@ -32,8 +32,7 @@ class LTPLE_Seller_Templates {
 		add_action('layer-type_edit_form_fields', array( $this, 'add_edit_layer_fields' ) );
 	
 		//add_filter('manage_edit-layer-type_columns', array( $this, 'set_layer_type_columns' ) );
-		//add_filter('manage_layer-type_custom_column', array( $this, 'add_layer_column_content' ),10,3);		
-		
+
 		//add_action('create_layer-type', array( $this, 'save_layer_taxonomy_fields' ) );
 		add_action('edit_layer-type', array( $this, 'save_layer_taxonomy_fields' ) );	
 			
